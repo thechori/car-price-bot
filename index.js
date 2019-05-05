@@ -1,7 +1,13 @@
+require("dotenv").config();
 const fs = require("fs");
 const axios = require("axios");
 const cheerio = require("cheerio");
+
 const cars = require("./cars");
+const client = require("twilio")(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
 
 cars.map(async car => {
   const response = await axios.get(car.url);
@@ -12,29 +18,32 @@ cars.map(async car => {
 
   const html = response.data;
   const $ = cheerio.load(html);
-  const price = $(".price").text();
+  const newPrice = $(".price").text();
 
   try {
     if (fs.existsSync(`prices/${car.filename}`)) {
       // File exists, check for price change
-      console.log("file exists");
+      console.log(
+        `Found existing price for ${car.year} ${car.make} ${car.model}.`
+      );
 
-      fs.readFile(`prices/${car.filename}`, "utf-8", (err, content) => {
+      fs.readFile(`prices/${car.filename}`, "utf-8", (err, oldPrice) => {
         if (err) return console.log("error: ", err);
-        console.log("Previous price: ", content);
-        console.log("New price: ", price);
+        console.log("Previous price: ", oldPrice);
+        console.log("New price: ", newPrice);
 
         // Update price if there was a change
-        if (content === price) {
+        if (oldPrice === newPrice) {
           console.log("There was no price change, skipping file update...");
         } else {
           console.log("There was a price change! Updating...");
+          updatePrice(car, newPrice);
         }
       });
     } else {
       // No file exists
       console.log("No file exists, updating!");
-      updatePrice(car);
+      updatePrice(car, newPrice);
     }
   } catch (error) {
     console.log("something happened");
@@ -45,6 +54,21 @@ cars.map(async car => {
 function updatePrice(car, newPrice) {
   fs.writeFile(`prices/${car.filename}`, newPrice, err => {
     if (err) return console.log(err);
-    console.log("successfully wrote to file");
+    console.log("Successfully updated text file with new price.");
+    sendText(car, newPrice);
   });
+}
+
+function sendText(car, newPrice) {
+  console.log("Sending a text to ", process.env.CLIENT_PHONE_NUMBER);
+  client.messages
+    .create({
+      from: process.env.TWILIO_PHONE_NUMBER,
+      to: process.env.CLIENT_PHONE_NUMBER,
+      body: `${car.filename}: Price change to ${newPrice}. Check it out: ${
+        car.url
+      }`
+    })
+    .then(message => console.log("Sent text: ", message.sid))
+    .catch(error => console.log("TWILIO ERROR: ", error));
 }
