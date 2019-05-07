@@ -4,11 +4,14 @@ const axios = require("axios");
 const cheerio = require("cheerio");
 
 const cars = require("./cars");
+
+// Initialize Twilio client
 const client = require("twilio")(
   process.env.TWILIO_ACCOUNT_SID,
   process.env.TWILIO_AUTH_TOKEN
 );
 
+// Loop through each car in the `cars.js` file
 cars.map(async car => {
   console.log(`Checking price for ${car.description}...`);
 
@@ -18,17 +21,20 @@ cars.map(async car => {
     return console.log("Error in fetching HTML");
   }
 
+  // Grab price from post
   const html = response.data;
   const $ = cheerio.load(html);
   const newPrice = $(".price").text();
 
   try {
+    // Check if file exists
     if (fs.existsSync(`prices/${car.filename}`)) {
-      // File exists, check for price change
       console.log(`Found existing price for ${car.description}.`);
 
+      // Read file content
       fs.readFile(`prices/${car.filename}`, "utf-8", (err, oldPrice) => {
         if (err) return console.log("error: ", err);
+
         console.log("Previous price: ", oldPrice);
         console.log("New price: ", newPrice);
 
@@ -46,7 +52,6 @@ cars.map(async car => {
       updatePrice(car, newPrice);
     }
   } catch (error) {
-    console.log("something happened");
     return console.log(error);
   }
 });
