@@ -12,7 +12,7 @@ Node.js script that will monitor cars of interest and notify via Twilio when pri
 
 1. Rename `.env.example` to `.env` and configure using your Twilio account settings
 
-1. Setup cronjob for script to run once a day at 6:45am
+1. Setup cronjob for script to run at desired times (_below example is everyday at 6:45am_)
 
 - `$ crontab -e`
 - `45 6 * * * path/to/node /path/to/car-price-bot/index.js`
