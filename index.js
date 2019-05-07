@@ -38,7 +38,7 @@ cars.map(async car => {
         console.log("Previous price: ", oldPrice);
         console.log("New price: ", newPrice);
 
-        // Update price if there was a change
+        // Check for a price change
         if (oldPrice === newPrice) {
           console.log("There was no price change, skipping file update...");
         } else {
@@ -60,7 +60,19 @@ function updatePrice(car, newPrice) {
   fs.writeFile(`prices/${car.filename}`, newPrice, err => {
     if (err) return console.log(err);
     console.log("Successfully updated text file with new price.");
-    sendText(car, newPrice);
+
+    // Check for lower price
+    if (car.desiredPrice) {
+      // Parse dollar string values for comparison
+      if (parseDollarString(newPrice) <= parseDollarString(car.desiredPrice)) {
+        sendText(car, newPrice);
+      } else {
+        // Price is not lower, do nothing
+      }
+    } else {
+      // User did not specify a `desiredPrice`, always send a text on price change
+      sendText(car, newPrice);
+    }
   });
 }
 
@@ -70,10 +82,16 @@ function sendText(car, newPrice) {
     .create({
       from: process.env.TWILIO_PHONE_NUMBER,
       to: process.env.CLIENT_PHONE_NUMBER,
-      body: `${car.description}: Price change to ${newPrice}. Check it out: ${
+      body: `${car.description}: Price updated to ${newPrice}. Check it out: ${
         car.url
       }`
     })
     .then(message => console.log("Sent text: ", message.sid))
     .catch(error => console.log("TWILIO ERROR: ", error));
+}
+
+// Example input: "$15000"
+// Example output: "15000"
+function parseDollarString(input) {
+  return input.split("$")[1];
 }

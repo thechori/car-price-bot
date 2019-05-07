@@ -4,6 +4,8 @@ Node.js script that will monitor cars of interest and notify via Twilio when pri
 
 ## Requirements
 
+- [Node.js 10+](https://nodejs.org/en/)
+
 - You must setup a [Twilio account](https://www.twilio.com/try-twilio) for text message notifications
 
 ## Setup
