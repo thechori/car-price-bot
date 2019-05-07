@@ -10,6 +10,8 @@ const client = require("twilio")(
 );
 
 cars.map(async car => {
+  console.log(`Checking price for ${car.description}...`);
+
   const response = await axios.get(car.url);
 
   if (response.status !== 200) {
@@ -23,9 +25,7 @@ cars.map(async car => {
   try {
     if (fs.existsSync(`prices/${car.filename}`)) {
       // File exists, check for price change
-      console.log(
-        `Found existing price for ${car.year} ${car.make} ${car.model}.`
-      );
+      console.log(`Found existing price for ${car.description}.`);
 
       fs.readFile(`prices/${car.filename}`, "utf-8", (err, oldPrice) => {
         if (err) return console.log("error: ", err);
@@ -65,7 +65,7 @@ function sendText(car, newPrice) {
     .create({
       from: process.env.TWILIO_PHONE_NUMBER,
       to: process.env.CLIENT_PHONE_NUMBER,
-      body: `${car.filename}: Price change to ${newPrice}. Check it out: ${
+      body: `${car.description}: Price change to ${newPrice}. Check it out: ${
         car.url
       }`
     })
