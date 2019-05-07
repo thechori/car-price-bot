@@ -19,4 +19,4 @@ Node.js script that will monitor cars of interest and notify via Twilio when pri
 
 ## Notes
 
-This script only works with [Craigslist cars & trucks postings](https://houston.craigslist.org/d/cars-trucks/search/cta) and has verified to work as of **2019/05/07**
+This script was only tested with [Craigslist cars & trucks postings](https://houston.craigslist.org/d/cars-trucks/search/cta) and was verified on **2019/05/07**.
