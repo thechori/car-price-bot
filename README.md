@@ -9,4 +9,4 @@ Node.js script that will monitor cars of interest and notify via Twilio when pri
 2. Setup cronjob for script to run once a day at 6:45am
 
 - `$ crontab -e`
-- `45 6 * * * node /path/to/car-price-bot/index.js`
+- `45 6 * * * path/to/node /path/to/car-price-bot/index.js`
