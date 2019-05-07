@@ -16,3 +16,7 @@ Node.js script that will monitor cars of interest and notify via Twilio when pri
 
 - `$ crontab -e`
 - `45 6 * * * path/to/node /path/to/car-price-bot/index.js`
+
+## Notes
+
+This script only works with [Craigslist cars & trucks postings](https://houston.craigslist.org/d/cars-trucks/search/cta) and has verified to work as of **2019/05/07**
