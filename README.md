@@ -22,3 +22,5 @@ Node.js script that will monitor cars of interest and notify via Twilio when pri
 ## Notes
 
 This script was only tested with [Craigslist cars & trucks postings](https://houston.craigslist.org/d/cars-trucks/search/cta) and was verified on **2019/05/07**.
+
+The `-v` or `--verbose` argument can be passed to the node script (or accessed via the `verbose` npm script) in order to print informative logs.
